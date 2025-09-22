@@ -11,5 +11,7 @@ typedef struct Task {
 
 int getOpenTasks(task *open_tasks, int total_count, task *all_tasks);
 
+void showOpenTasksView();
+
 #endif
 
