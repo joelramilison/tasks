@@ -7,10 +7,6 @@
 int main() {
 
 	
-	struct TasksResult result = readTasks();
-	task open_tasks[result.count];
-	int open_tasks_count = getOpenTasks(open_tasks, result.count, result.tasks);	
-	printf("%d offene Tasks gefunden.\n", open_tasks_count);
 
 	return 0;
 }
