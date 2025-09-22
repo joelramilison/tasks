@@ -9,6 +9,7 @@ typedef struct Task {
 	int open;
 } task;
 
+int getOpenTasks(task *open_tasks, int total_count, task *all_tasks);
 
 #endif
 
