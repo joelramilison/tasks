@@ -3,19 +3,28 @@
 #include "main.h"
 #include "fileio.h"
 
-const char DB_PATH[] = "data/.db";
+const char DB_PATH[] = "./.db";
 
 struct TasksResult readTasks() {
 
 	FILE *db_file = fopen(DB_PATH, "r");
 	if (db_file == NULL) {
+		// Create new file if doesn't exist
+		db_file = fopen(DB_PATH, "w");
+		if (db_file == NULL) {
+			fprintf(stderr, "Error creating new database file.\n");
+			exit(EXIT_FAILURE);
+		}
+		fprintf(db_file, "0");
+		fclose(db_file);
 		struct TasksResult result;
-		result.tasks = NULL;
+		int tasks_allocated = 40;
+		result.tasks = malloc(tasks_allocated * sizeof(task));
 		result.count = 0;
 		return result;
 	}
 
-	// Read tasks count from first line
+	// Read tasks count from first line;
      	char tasks_count_buffer[10];
 	if (fgets(tasks_count_buffer, sizeof(tasks_count_buffer), db_file) == NULL) {
 		fprintf(stderr, "Couldn't read first line from file.\n");
@@ -27,8 +36,14 @@ struct TasksResult readTasks() {
 		exit(EXIT_FAILURE);
 	}
 
+	int tasks_allocated = (tasks_count > 20) ? 2 * tasks_count : 40;
+	task *tasks = malloc(tasks_allocated * sizeof(task));
+
+	if (tasks_count == 0) {
+		struct TasksResult result = {.tasks = tasks, .count = 0};
+		return result;	
+	}
 	// Read tasks list
-	task *tasks = malloc(tasks_count * sizeof(task));
 	// Title: 100, open + comma: 2, newline: 1
       	char buffer[104];
 	for (int i = 0; i < tasks_count; i++) {
