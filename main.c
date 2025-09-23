@@ -8,7 +8,6 @@ int main() {
 
 	
 	struct TasksState state = readTasks();
-	showOpenTasksView(&state);
 
 	return 0;
 }

@@ -5,6 +5,21 @@
 
 const char DB_PATH[] = "./.db";
 
+void writeTasks(struct TasksState *state) {
+	
+	FILE *db_file = fopen(DB_PATH, "w");
+	if (db_file == NULL) {
+		fprintf(stderr, "Error: Can't open database file to write.\n");
+		exit(EXIT_FAILURE);
+	}
+	fprintf(db_file, "%d\n", state->count);
+	for (int i = 0; i < state->count; i++) {
+      		fprintf(db_file, "%d,%s\n", state->tasks[i].open, state->tasks[i].title);
+	}
+	fclose(db_file);
+}
+
+
 struct TasksState readTasks() {
 
 	FILE *db_file = fopen(DB_PATH, "r");

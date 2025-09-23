@@ -6,4 +6,6 @@
 
 struct TasksState readTasks();
 
+void writeTasks(struct TasksState *state);
+
 #endif
