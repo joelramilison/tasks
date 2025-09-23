@@ -3,12 +3,7 @@
 
 #include "main.h"
 
-struct TasksResult {
 
-	task *tasks;
-	int count;
-};
-
-struct TasksResult readTasks();
+struct TasksState readTasks();
 
 #endif

@@ -5,7 +5,7 @@
 
 const char DB_PATH[] = "./.db";
 
-struct TasksResult readTasks() {
+struct TasksState readTasks() {
 
 	FILE *db_file = fopen(DB_PATH, "r");
 	if (db_file == NULL) {
@@ -17,9 +17,9 @@ struct TasksResult readTasks() {
 		}
 		fprintf(db_file, "0");
 		fclose(db_file);
-		struct TasksResult result;
-		int tasks_allocated = 40;
-		result.tasks = malloc(tasks_allocated * sizeof(task));
+		struct TasksState result;
+		result.tasks_allocated = 40;
+		result.tasks = malloc(result.tasks_allocated * sizeof(task));
 		result.count = 0;
 		return result;
 	}
@@ -40,7 +40,7 @@ struct TasksResult readTasks() {
 	task *tasks = malloc(tasks_allocated * sizeof(task));
 
 	if (tasks_count == 0) {
-		struct TasksResult result = {.tasks = tasks, .count = 0};
+		struct TasksState result = {.tasks = tasks, .count = 0, .tasks_allocated = tasks_allocated};
 		return result;	
 	}
 	// Read tasks list
@@ -73,7 +73,7 @@ struct TasksResult readTasks() {
 		fprintf(stderr, "Error: More lines in the file than specified.\n");
 		exit(EXIT_FAILURE);
 	}
-	struct TasksResult result = {.tasks = tasks, .count = tasks_count};
+	struct TasksState result = {.tasks = tasks, .count = tasks_count, .tasks_allocated = tasks_allocated};
 	fclose(db_file);
       	return result;
 }

@@ -13,7 +13,7 @@ int main() {
 
 void showOpenTasksView() {
 	
-	struct TasksResult result = readTasks();
+	struct TasksState result = readTasks();
 	task open_tasks[result.count];
 	int open_tasks_count = getOpenTasks(open_tasks, result.count, result.tasks);
 

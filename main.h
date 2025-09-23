@@ -9,6 +9,13 @@ typedef struct Task {
 	int open;
 } task;
 
+struct TasksState {
+
+	task *tasks;
+	int count;
+	int tasks_allocated;
+};
+
 int getOpenTasks(task *open_tasks, int total_count, task *all_tasks);
 
 void showOpenTasksView();
