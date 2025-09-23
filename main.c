@@ -7,15 +7,16 @@
 int main() {
 
 	
+	struct TasksState state = readTasks();
+	showOpenTasksView(&state);
 
 	return 0;
 }
 
-void showOpenTasksView() {
+void showOpenTasksView(struct TasksState *state) {
 	
-	struct TasksState result = readTasks();
-	task open_tasks[result.count];
-	int open_tasks_count = getOpenTasks(open_tasks, result.count, result.tasks);
+	task open_tasks[state->count];
+	int open_tasks_count = getOpenTasks(open_tasks, state->count, state->tasks);
 
 	if (open_tasks_count == 0) {
 		puts("No open tasks.");
