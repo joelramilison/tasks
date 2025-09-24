@@ -20,5 +20,7 @@ int getOpenTasks(task *open_tasks, int total_count, task *all_tasks);
 
 void showOpenTasksView();
 
+int parseCommaSepList(char *input, long int *parsed_numbers);
+
 #endif
 
