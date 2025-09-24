@@ -51,7 +51,6 @@ int getOpenTasks(task *open_tasks, int total_count, task *all_tasks) {
 
 int parseCommaSepList(char *input, long int *parsed_numbers) {
 
-	size_t input_length = strlen(input);
 	int parsed_numbers_count = 0;
 	char *strtol_end;
 	char *current = input;
