@@ -9,6 +9,8 @@ int main() {
 
 	
 	struct TasksState state = readTasks();
+	showOpenTasksView(&state);
+
 
 	return 0;
 }
@@ -28,12 +30,48 @@ void showOpenTasksView(struct TasksState *state) {
       		printf("%d. %s\n", i + 1, open_tasks[i]);
 	}
 	printf("\nEnter a comma-separated list of tasks you wish to mark as completed:\n");
-	char input[50];
-	// TODO: Add 1 character to the buffer and print an error if it's filled (input too long)
-	fgets(input, sizeof(input), stdin);
-	
-	
 
+	char input[50];
+	long int parsed_choices[50 / 2 + 1];
+	int parsed_choices_count;
+	int too_high_found;
+
+	// TODO: Add 1 character to the buffer and print an error if it's filled (input too long)
+	do {
+		too_high_found = 0;
+		fgets(input, sizeof(input), stdin);
+		parsed_choices_count = parseCommaSepList(input, parsed_choices);
+
+		for (int i = 0; i < parsed_choices_count; i++) {
+			if (parsed_choices[i] > open_tasks_count) {
+      				fprintf(stderr, "\nOne of the choices exceeds the highest possible task number!\n");
+				puts("Please try again:");
+				too_high_found = 1;
+				break;
+			}
+
+		}
+		
+	} while (too_high_found);
+
+	puts("\nDelete the following tasks?\n");
+	for (int i = 0; i < parsed_choices_count; i++) {
+		printf("- %s\n", open_tasks[i].title);
+	}
+	printf("\n[y/n]\n");
+
+	while (1) {
+
+		fgets(input,sizeof(input), stdin);
+		if (strcmp(input, "y\n") == 0) {
+			//TODO: Delete the tasks.
+			return;
+		} else if (strcmp(input, "n\n") == 0) {
+			puts("\nAborted the action.");
+			return;
+		} 
+		puts("Wrong input. Try again! [y/n]");
+	}
 }
 
 int getOpenTasks(task *open_tasks, int total_count, task *all_tasks) {
@@ -56,13 +94,14 @@ int parseCommaSepList(char *input, long int *parsed_numbers) {
 	char *current = input;
 
 	while (*current != '\0') {
-		if (*current == ' ' || *current == ',') {
+		if (*current == ' ' || *current == ',' || *current == '\n') {
 			current++;
 			continue;
 		}
 
 		parsed_numbers[parsed_numbers_count] = strtol(current, &strtol_end, 0);
-		if (!parsed_numbers[parsed_numbers_count]) {
+		// returns 0 if couldn't parse
+		if (parsed_numbers[parsed_numbers_count] == 0) {
 			fprintf(stderr, "Error parsing the comma-separated list!\n");
 			exit(EXIT_FAILURE);
 		}
