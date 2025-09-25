@@ -22,5 +22,7 @@ void showOpenTasksView(struct TasksState *state);
 
 int parseCommaSepList(char *input, long int *parsed_numbers);
 
+void deleteTasks(char **to_delete_titles, int to_delete_count, struct TasksState *state);
+
 #endif
 

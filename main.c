@@ -8,10 +8,29 @@
 int main() {
 
 	
-	struct TasksState state = readTasks();
-	showOpenTasksView(&state);
+//	struct TasksState state = readTasks();
+//	showOpenTasksView(&state);
+
+/*
+	task task1 = {.open = 0, .title = "Hello World!"};
+	task task2 = {.open = 0, .title = "Jello World!"};
+	task task3 = {.open = 0, .title = "Kello World!"};
+	task tasks[3] = {task1, task2, task3};
+	struct TasksState state = {.tasks = tasks, .count = 3};
+	puts("Before:");
+	for (int i = 0; i < state.count; i++) {
+		printf("Task %d: %s\n", i + 1, tasks[i].title);
+	}
 
 
+	char *to_delete_titles[2] = {"Hello World!", "Jello World!"};
+	int to_delete_count = 2;
+	deleteTasks(to_delete_titles, to_delete_count, &state);
+	puts("After:");
+	for (int i = 0; i < state.count; i++) {
+		printf("Task %d: %s\n", i + 1, tasks[i].title);
+	}
+*/
 	return 0;
 }
 
@@ -110,3 +129,41 @@ int parseCommaSepList(char *input, long int *parsed_numbers) {
 	}
 	return parsed_numbers_count;
 }
+
+
+// Deletes every task that matches to one of the given titles
+void deleteTasks(char **to_delete_titles, int to_delete_count, struct TasksState *state) {
+
+	int found;
+	printf("state->count: %d\n", state->count);
+	int start_count = state->count;
+
+	for (int i = 0, j = 0; i < start_count; i++) {
+		printf("Durchlauf i=%d, j=%d\n", i, j);
+      		
+      		found = 0;
+
+		if (i != j) {
+			printf("Verschiebe von %d nach %d.\n", i, j);
+      			state->tasks[j] = state->tasks[i];
+      		}
+
+      		for (int k = 0; k < to_delete_count; k++) {
+      			if (strcmp(state->tasks[i].title, to_delete_titles[k]) == 0) {
+      				found = 1;
+				printf("state count: %d\n", state->count);
+      				state->count--;
+				printf("state count: %d\n", state->count);
+      			}
+      		}
+		
+		if (!found) {
+      			j++;
+		}
+	}
+}
+
+
+      				
+	
+
