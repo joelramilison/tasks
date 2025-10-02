@@ -46,7 +46,7 @@ void showOpenTasksView(struct TasksState *state) {
 
 	puts("These are your open tasks:\n");
 	for (int i = 0; i < open_tasks_count; i++) {
-      		printf("%d. %s\n", i + 1, open_tasks[i]);
+      		printf("%d. %s\n", i + 1, open_tasks[i].title);
 	}
 	printf("\nEnter a comma-separated list of tasks you wish to mark as completed:\n");
 
