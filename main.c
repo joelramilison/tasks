@@ -73,9 +73,14 @@ void showOpenTasksView(struct TasksState *state) {
 		
 	} while (too_high_found);
 
+	char *to_delete_titles[parsed_choices_count];
+	for (int i = 0; i < parsed_choices_count; i++) {
+		to_delete_titles[i] = open_tasks[parsed_choices[i] - 1].title;
+	}
+
 	puts("\nDelete the following tasks?\n");
 	for (int i = 0; i < parsed_choices_count; i++) {
-		printf("- %s\n", open_tasks[i].title);
+		printf("- %s\n", to_delete_titles[i]);
 	}
 	printf("\n[y/n]\n");
 
