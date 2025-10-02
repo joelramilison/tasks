@@ -138,6 +138,24 @@ int parseCommaSepList(char *input, long int *parsed_numbers) {
 }
 
 
+void addTask(task task_to_add, struct TasksState *state) {
+
+	int new_tasks_allocated = (state->count > 20) ? 2 * state->count : 40;
+
+	if (new_tasks_allocated != state->tasks_allocated) {
+		state->tasks_allocated = new_tasks_allocated;
+		state->tasks = realloc(state->tasks, new_tasks_allocated * sizeof(task));
+		if (state->tasks == NULL) {
+			fprintf(stderr, "Error reallocating memory after adding a task.\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	state->tasks[state->count] = task_to_add;
+	state->count += 1;
+	writeTasks(state);
+}
+
+	
 // Deletes every task that matches to one of the given titles
 void deleteTasks(char **to_delete_titles, int to_delete_count, struct TasksState *state) {
 
