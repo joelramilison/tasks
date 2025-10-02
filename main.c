@@ -88,7 +88,9 @@ void showOpenTasksView(struct TasksState *state) {
 
 		fgets(input,sizeof(input), stdin);
 		if (strcmp(input, "y\n") == 0) {
-			//TODO: Delete the tasks.
+			deleteTasks(to_delete_titles, parsed_choices_count, state);
+			writeTasks(state);	
+			puts("\nSuccessfully deleted the tasks.");
 			return;
 		} else if (strcmp(input, "n\n") == 0) {
 			puts("\nAborted the action.");
@@ -140,25 +142,20 @@ int parseCommaSepList(char *input, long int *parsed_numbers) {
 void deleteTasks(char **to_delete_titles, int to_delete_count, struct TasksState *state) {
 
 	int found;
-	printf("state->count: %d\n", state->count);
 	int start_count = state->count;
 
 	for (int i = 0, j = 0; i < start_count; i++) {
-		printf("Durchlauf i=%d, j=%d\n", i, j);
       		
       		found = 0;
 
 		if (i != j) {
-			printf("Verschiebe von %d nach %d.\n", i, j);
       			state->tasks[j] = state->tasks[i];
       		}
 
       		for (int k = 0; k < to_delete_count; k++) {
       			if (strcmp(state->tasks[i].title, to_delete_titles[k]) == 0) {
       				found = 1;
-				printf("state count: %d\n", state->count);
       				state->count--;
-				printf("state count: %d\n", state->count);
       			}
       		}
 		
