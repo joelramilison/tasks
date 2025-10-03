@@ -56,7 +56,8 @@ void showOpenTasksView(struct TasksState *state) {
 	for (int i = 0; i < open_tasks_count; i++) {
       		printf("%d. %s\n", i + 1, open_tasks[i].title);
 	}
-	printf("\nEnter a comma-separated list of tasks you wish to mark as completed:\n");
+	printf("\nEnter a comma-separated list of tasks you wish to mark as completed.\n");
+	printf("To change nothing, enter 'n'.\n");
 
 	char input[50];
 	long int parsed_choices[50 / 2 + 1];
@@ -67,6 +68,10 @@ void showOpenTasksView(struct TasksState *state) {
 	do {
 		too_high_found = 0;
 		fgets(input, sizeof(input), stdin);
+		if (strcmp(input, "n\n") == 0) {
+			puts("Exiting the program.");
+			exit(EXIT_SUCCESS);
+		}
 		parsed_choices_count = parseCommaSepList(input, parsed_choices);
 
 		for (int i = 0; i < parsed_choices_count; i++) {
