@@ -14,6 +14,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Too many arguments given. Try again.\n");
 	} else if (argc == 3 && strcmp(argv[1], "-a") == 0) {
 		addTask(argv[2], &state);
+	} else if (argc == 2 && strcmp(argv[1], "-c") == 0) {
+		clearOpenTasks(&state);
 	}
 
 //	struct TasksState state = readTasks();
@@ -111,6 +113,15 @@ void showOpenTasksView(struct TasksState *state) {
 		} 
 		puts("Wrong input. Try again! [y/n]");
 	}
+}
+
+void clearOpenTasks(struct TasksState *state) {
+
+	for (int i = 0; i < state->count; i++) {
+		state->tasks[i].open = 0;
+	}
+	writeTasks(state);
+	puts("Successfully cleared open tasks.");
 }
 
 int getOpenTasks(task *open_tasks, int total_count, task *all_tasks) {
