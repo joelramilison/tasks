@@ -5,9 +5,17 @@
 #include "fileio.h"
 
 
-int main() {
+int main(int argc, char **argv) {
 
-	
+	struct TasksState state = readTasks();
+	if (argc == 1) {
+		showOpenTasksView(&state);
+	} else if (argc > 3) {
+		fprintf(stderr, "Too many arguments given. Try again.\n");
+	} else if (argc == 3 && strcmp(argv[1], "-a") == 0) {
+		addTask(argv[2], &state);
+	}
+
 //	struct TasksState state = readTasks();
 //	showOpenTasksView(&state);
 
@@ -138,8 +146,22 @@ int parseCommaSepList(char *input, long int *parsed_numbers) {
 }
 
 
-void addTask(task task_to_add, struct TasksState *state) {
+void addTask(char *title, struct TasksState *state) {
 
+	if (strlen(title) > 100) {
+		fprintf(stderr, "Error: Title too long.\n");
+		exit(EXIT_FAILURE);
+	}
+	int i = 0;
+	char temp = '0';
+	while (temp != '\0') {
+		if (temp == '\n') {
+			fprintf(stderr, "Error: Line breaks in task name.");
+			exit(EXIT_FAILURE);
+		}
+		temp = title[i];
+		i++;
+	}
 	int new_tasks_allocated = (state->count > 20) ? 2 * state->count : 40;
 
 	if (new_tasks_allocated != state->tasks_allocated) {
@@ -150,9 +172,15 @@ void addTask(task task_to_add, struct TasksState *state) {
 			exit(EXIT_FAILURE);
 		}
 	}
-	state->tasks[state->count] = task_to_add;
+	
+	task *added_task = &(state->tasks[state->count]);
+
+	strncpy(added_task->title, title, 100);
+	added_task->open = 0;
+	added_task->title[100 - 1] = '\0';
 	state->count += 1;
 	writeTasks(state);
+	printf("Successfully added task:\n%s\n", title);
 }
 
 	
