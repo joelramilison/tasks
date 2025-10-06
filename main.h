@@ -28,5 +28,7 @@ void deleteTasks(char **to_delete_titles, int to_delete_count, struct TasksState
 
 void addTask(char *title, struct TasksState *state);
 
+void startTaskPlanning(struct TasksState *state);
+
 #endif
 

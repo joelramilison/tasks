@@ -16,6 +16,8 @@ int main(int argc, char **argv) {
 		addTask(argv[2], &state);
 	} else if (argc == 2 && strcmp(argv[1], "-c") == 0) {
 		clearOpenTasks(&state);
+	} else if (argc == 2 && strcmp(argv[1], "-p") == 0) {
+		startTaskPlanning(&state);
 	}
 
 //	struct TasksState state = readTasks();
@@ -136,6 +138,56 @@ int getOpenTasks(task *open_tasks, int total_count, task *all_tasks) {
 	}
 	return open_counter;
 }
+
+void startTaskPlanning(struct TasksState *state) {
+
+	if (state->count == 0) {
+		puts("Your task list is empty.");
+		return;
+	}
+	
+	task open_tasks[state->count];
+	int open_tasks_count = getOpenTasks(open_tasks, state->count, state->tasks);
+
+	puts("Your open tasks:\n");
+	if (open_tasks_count == 0) {
+		puts("No open tasks.");
+	}
+
+	task *listed_tasks[state->count];
+	int list_counter = 0;
+
+	for (int i = 0; i < open_tasks_count; i++) {
+		listed_tasks[list_counter] = &open_tasks[i];
+		list_counter++;
+		printf("%d. %s\n", list_counter, open_tasks[i].title);
+	}
+	
+	puts("\nOther tasks:\n");
+
+	for (int i = 0; i < state->count; i++) {
+		int found = 0;
+		for (int j = 0; j < open_tasks_count; j++) {
+			if (strcmp(state->tasks[i].title, open_tasks[j].title) == 0) {
+				found = 1;
+			}
+		}
+		if (!found) {
+			listed_tasks[list_counter] = &state->tasks[i];
+			list_counter++;
+			printf("%d. %s\n", list_counter, state->tasks[i].title);
+		}
+	}
+
+	puts("Enter a comma-separated list of tasks to plan or unplan.");
+	puts("(Entering 'n' stops the program)\n");
+	
+
+}
+
+
+	
+	
 
 int parseCommaSepList(char *input, long int *parsed_numbers) {
 
