@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
 
 void showOpenTasksView(struct TasksState *state) {
 	
-	task open_tasks[state->count];
-	int open_tasks_count = getOpenTasks(open_tasks, state->count, state->tasks);
+	task *open_tasks[state->count];
+	int open_tasks_count = getOpenTasks(open_tasks, state);
 
 	if (open_tasks_count == 0) {
 		puts("No open tasks.");
@@ -58,7 +58,7 @@ void showOpenTasksView(struct TasksState *state) {
 
 	puts("These are your open tasks:\n");
 	for (int i = 0; i < open_tasks_count; i++) {
-      		printf("%d. %s\n", i + 1, open_tasks[i].title);
+      		printf("%d. %s\n", i + 1, open_tasks[i]->title);
 	}
 	printf("\nEnter a comma-separated list of tasks you wish to mark as completed.\n");
 	printf("To change nothing, enter 'n'.\n");
@@ -92,7 +92,7 @@ void showOpenTasksView(struct TasksState *state) {
 
 	char *to_delete_titles[parsed_choices_count];
 	for (int i = 0; i < parsed_choices_count; i++) {
-		to_delete_titles[i] = open_tasks[parsed_choices[i] - 1].title;
+		to_delete_titles[i] = open_tasks[parsed_choices[i] - 1]->title;
 	}
 
 	puts("\nDelete the following tasks?\n");
@@ -126,13 +126,13 @@ void clearOpenTasks(struct TasksState *state) {
 	puts("Successfully cleared open tasks.");
 }
 
-int getOpenTasks(task *open_tasks, int total_count, task *all_tasks) {
+int getOpenTasks(task **open_tasks, struct TasksState *state) {
 
 	int open_counter = 0;
 	int i;
-	for (i = 0; i < total_count; i++) {
-		if (all_tasks[i].open) {
-			open_tasks[open_counter] = all_tasks[i];
+	for (i = 0; i < state->count; i++) {
+		if (state->tasks[i].open) {
+			open_tasks[open_counter] = &(state->tasks[i]);
 			open_counter++;
 		}
 	}
@@ -146,8 +146,8 @@ void startTaskPlanning(struct TasksState *state) {
 		return;
 	}
 	
-	task open_tasks[state->count];
-	int open_tasks_count = getOpenTasks(open_tasks, state->count, state->tasks);
+	task *open_tasks[state->count];
+	int open_tasks_count = getOpenTasks(open_tasks, state);
 
 	puts("Your open tasks:\n");
 	if (open_tasks_count == 0) {
@@ -158,9 +158,9 @@ void startTaskPlanning(struct TasksState *state) {
 	int list_counter = 0;
 
 	for (int i = 0; i < open_tasks_count; i++) {
-		listed_tasks[list_counter] = &open_tasks[i];
+		listed_tasks[list_counter] = open_tasks[i];
 		list_counter++;
-		printf("%d. %s\n", list_counter, open_tasks[i].title);
+		printf("%d. %s\n", list_counter, open_tasks[i]->title);
 	}
 	
 	puts("\nOther tasks:\n");
@@ -168,12 +168,12 @@ void startTaskPlanning(struct TasksState *state) {
 	for (int i = 0; i < state->count; i++) {
 		int found = 0;
 		for (int j = 0; j < open_tasks_count; j++) {
-			if (strcmp(state->tasks[i].title, open_tasks[j].title) == 0) {
+			if (&(state->tasks[i]) == open_tasks[j]) {
 				found = 1;
 			}
 		}
 		if (!found) {
-			listed_tasks[list_counter] = &state->tasks[i];
+			listed_tasks[list_counter] = &(state->tasks[i]);
 			list_counter++;
 			printf("%d. %s\n", list_counter, state->tasks[i].title);
 		}
@@ -181,6 +181,62 @@ void startTaskPlanning(struct TasksState *state) {
 
 	puts("Enter a comma-separated list of tasks to plan or unplan.");
 	puts("(Entering 'n' stops the program)\n");
+
+	
+	char input[50];
+	long int parsed_choices[50 / 2 + 1];
+	int parsed_choices_count;
+	int too_high_found;
+
+	// TODO: Add 1 character to the buffer and print an error if it's filled (input too long)
+	do {
+		too_high_found = 0;
+		fgets(input, sizeof(input), stdin);
+		if (strcmp(input, "n\n") == 0) {
+			puts("Exiting the program.");
+			exit(EXIT_SUCCESS);
+		}
+		parsed_choices_count = parseCommaSepList(input, parsed_choices);
+
+		for (int i = 0; i < parsed_choices_count; i++) {
+			if (parsed_choices[i] > list_counter) {
+      				fprintf(stderr, "\nOne of the choices exceeds the highest possible task number!\n");
+				puts("Please try again:");
+				too_high_found = 1;
+				break;
+			}
+
+		}
+		
+	} while (too_high_found);
+
+	task *to_modify_tasks[parsed_choices_count];
+	for (int i = 0; i < parsed_choices_count; i++) {
+		to_modify_tasks[i] = listed_tasks[parsed_choices[i] - 1];
+	}
+
+	puts("\nPlan/Unplan the following tasks?\n");
+	for (int i = 0; i < parsed_choices_count; i++) {
+		printf("- %s\n", to_modify_tasks[i]->title);
+	}
+	printf("\n[y/n]\n");
+
+	while (1) {
+
+		fgets(input,sizeof(input), stdin);
+		if (strcmp(input, "y\n") == 0) {
+			for (int i = 0; i < parsed_choices_count; i++) {
+				to_modify_tasks[i]->open = 1 - to_modify_tasks[i]->open;	
+			}
+			writeTasks(state);	
+			puts("\nSuccessfully planned/unplanned the tasks.");
+			return;
+		} else if (strcmp(input, "n\n") == 0) {
+			puts("\nAborted the action.");
+			return;
+		} 
+		puts("Wrong input. Try again! [y/n]");
+	}
 	
 
 }
